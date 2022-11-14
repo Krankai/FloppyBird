@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CustomPhysicsEngine : MonoBehaviour
 {
-    // The global instance for reference - Singleton design pattern
+    // Singleton pattern
     public static CustomPhysicsEngine Instance = null;
 
     [SerializeField] private float _gravityAcceleration = 9.80665f;
@@ -15,7 +15,6 @@ public class CustomPhysicsEngine : MonoBehaviour
 
     private void Awake()
     {
-        // When this component is first added or activated, setup the global reference
         if (Instance == null)
         {
             Instance = this;

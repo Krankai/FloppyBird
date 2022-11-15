@@ -87,25 +87,53 @@ public class CustomRigidBody : MonoBehaviour
     private void CheckCollision(BoxCollider2D boxCollider)
     {
         // note: assuming both BoxCollider
-        List<Vector2> listEdgeNormals = new List<Vector2>();
-
         BoxCollider2D selfBoxCollider = GetComponent<BoxCollider2D>();
         if (selfBoxCollider == null) return;
 
+        List<Vector2> listEdgeNormals = new List<Vector2>();
+        List<Vector2> listSelfVertices = new List<Vector2>();
+        List<Vector2> listTargetVertices = new List<Vector2>();
+
         // Get all normals
-        PopulateNormalVectors(selfBoxCollider, ref listEdgeNormals);
-        PopulateNormalVectors(boxCollider, ref listEdgeNormals);
+        PopulateVerticesAndNormals(selfBoxCollider, ref listEdgeNormals, ref listSelfVertices);
+        PopulateVerticesAndNormals(boxCollider, ref listEdgeNormals, ref listTargetVertices);
 
         // Debug!!!
-        // foreach (var normal in listEdgeNormals)
+        // foreach (var vertice in listVertices)
         // {
-        //     Debug.Log(normal);
+        //     Debug.Log(vertice);
         // }
 
-        // TODO:...
+        // For each normal vector...
+        foreach (var normal in listEdgeNormals)
+        {
+            float selfMin, selfMax;
+            float targetMin, targetMax;
+
+            bool isSetSelfState = false, isSetTargetState = false;
+
+            Debug.Log("Normal: " + normal);
+
+            // Project all vertices of self collider onto it, to find max and min
+            foreach (var vertice in listSelfVertices)
+            {
+                Vector2 projectedPoint = Vector3.Project(vertice, normal);
+
+                if (!isSetSelfState)
+                {
+                    // TODO...
+                }
+            }
+
+            // Do the same for target collider
+
+
+
+            break;
+        }
     }
 
-    private void PopulateNormalVectors(BoxCollider2D boxCollider, ref List<Vector2> list)
+    private void PopulateVerticesAndNormals(BoxCollider2D boxCollider, ref List<Vector2> listNormals, ref List<Vector2> listVertices)
     {
         Transform colliderTransform = boxCollider.transform;
         Vector2 colliderCenter = Vector2.zero;      // local
@@ -126,8 +154,14 @@ public class CustomRigidBody : MonoBehaviour
         Vector2 localMiddleLeft = localTopLeft + (localBotLeft - localTopLeft) * 0.5f;
         Vector2 horzontalNormal = colliderTransform.TransformVector(localMiddleLeft - colliderCenter).normalized;
 
-        // Populate the list with computed normal vectors
-        list.Add(verticalNormal);
-        list.Add(horzontalNormal);
+        // Populate normals list
+        listNormals.Add(verticalNormal);
+        listNormals.Add(horzontalNormal);
+
+        // Populate vertices list
+        listVertices.Add(colliderTransform.TransformPoint(localTopLeft));
+        listVertices.Add(colliderTransform.TransformPoint(localTopRight));
+        listVertices.Add(colliderTransform.TransformPoint(localBotLeft));
+        listVertices.Add(colliderTransform.TransformPoint(localBotRight));
     }
 }

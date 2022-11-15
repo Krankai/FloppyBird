@@ -200,7 +200,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 434810729}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.97, y: -1.44, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 0.1502, y: 0.1502, z: 0.1502}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -705,14 +705,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1389874351}
-  m_LocalRotation: {x: 0, y: 0, z: 0.5417816, w: 0.84051937}
+  m_LocalRotation: {x: 0, y: 0, z: -0.21780257, w: 0.9759929}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 65.61}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -25.16}
 --- !u!114 &1389874354
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -725,6 +725,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d9cc5f289e7dbc4481b400334104af3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetCollider: {fileID: 1597333777}
   <Velocity>k__BackingField: 0
   _isAppplyGravity: 0
   _mass: 1
@@ -895,6 +896,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d9cc5f289e7dbc4481b400334104af3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetCollider: {fileID: 0}
   <Velocity>k__BackingField: 0
   _isAppplyGravity: 1
   _mass: 100

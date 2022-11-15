@@ -11,17 +11,19 @@ public class CustomPhysicsEngine : MonoBehaviour
     [SerializeField] private float _gravityAcceleration = 9.80665f;
 
     [Header("Tweak Settings")]
-    [SerializeField] private float _maximumUpwardDistance = 5.0f;       // distance at which custom rigid body object will be put on brake
+    [SerializeField] private float _maximumUpwardDistance = 1.0f;       // distance at which custom rigid body object will be put on brake
 
-    [SerializeField] private float _brakeVelocity = 5.0f;
+    [SerializeField] private float _brakeVelocity = 3.0f;
 
-    //private CustomPhysicsBody[] _physicsBodies;
+    private Collider2D[] _colliders;                                    // custom rigid body will use this list to check for potential collision with collider objects
 
-    public float GravityAcceleration => _gravityAcceleration;
+    public float GetGravityAcceleration => _gravityAcceleration;
 
-    public float MaximumUpwardDistance => _maximumUpwardDistance;
+    public float GetMaxUpwardDistance => _maximumUpwardDistance;
 
-    public float BrakeVelocity => _brakeVelocity;
+    public float GetBrakeVelocity => _brakeVelocity;
+
+    public Collider2D[] GetColliders => _colliders;
 
     private void Awake()
     {
@@ -37,6 +39,13 @@ public class CustomPhysicsEngine : MonoBehaviour
 
     private void Start()
     {
-        //_physicsBodies = FindObjectsOfType<CustomPhysicsBody>();
+        _colliders = FindObjectsOfType<Collider2D>();
+
+        // foreach (var collider in _colliders)
+        // {
+        //     if (!collider.isActiveAndEnabled) continue;
+
+        //     Debug.Log(collider.gameObject.transform.position);
+        // }
     }
 }

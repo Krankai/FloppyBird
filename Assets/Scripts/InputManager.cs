@@ -8,7 +8,7 @@ public class InputManager : MonoBehaviour
 
     [SerializeField] private CustomRigidBody _customPhysicsBody;
 
-    private float _sampleForce = 20f;
+    private float _sampleForce = 10f;
 
     private void Update()
     {

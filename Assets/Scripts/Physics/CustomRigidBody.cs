@@ -23,6 +23,10 @@ public class CustomRigidBody : MonoBehaviour
 
     private Vector3 _positionAtImpact;
 
+    private BoxCollider2D _selfBoxCollider;
+
+    private Color _originalColor;
+
     public void AddForce(float forcePower)
     {
         // Assumption: impuse force
@@ -30,23 +34,29 @@ public class CustomRigidBody : MonoBehaviour
         _hasImpulseImpact = true;
     }
 
+    private void Awake()
+    {
+        _selfBoxCollider = GetComponent<BoxCollider2D>();
+        _originalColor = GetComponent<SpriteRenderer>().color;
+    }
+
     private void Start()
     {
         // debug!!!
-        CheckCollision(targetCollider);
+        // CheckCollision(targetCollider);
     }
 
     private void FixedUpdate()
     {
         ApplyGravity();
+        ApplyImpulseForce();        // check for (and apply) 'upward' impulse
 
-        // Check to apply 'upward' impulse
-        ApplyImpulseForce();
-
-        // Tweak velocity to simulate 'falling' effect like in Flappy Bird
+        // Tweak modification to mimic 'rea' gameplay (Flappy Bird)
         TweakVelocity();
 
         UpdateRigidBodyPosition();
+
+        ProcessCollision();
     }
 
     private void ApplyGravity()
@@ -84,52 +94,70 @@ public class CustomRigidBody : MonoBehaviour
         transform.position += new Vector3(0, -verticalDisplacement, 0);
     }
 
+    private void ProcessCollision()
+    {
+        Collider2D[] colliders = CustomPhysicsEngine.Instance.GetColliders;
+        foreach (var collider in colliders)
+        {
+            if (collider == null) continue;
+            if (this.gameObject.GetInstanceID() == collider.gameObject.GetInstanceID()) continue;
+
+            BoxCollider2D boxCollider = (BoxCollider2D)collider;
+            CheckCollision(boxCollider);
+        }
+    }
+
     private void CheckCollision(BoxCollider2D boxCollider)
     {
-        // note: assuming both BoxCollider
-        BoxCollider2D selfBoxCollider = GetComponent<BoxCollider2D>();
-        if (selfBoxCollider == null) return;
+        if (_selfBoxCollider == null || boxCollider == null) return;
 
         List<Vector2> listEdgeNormals = new List<Vector2>();
         List<Vector2> listSelfVertices = new List<Vector2>();
         List<Vector2> listTargetVertices = new List<Vector2>();
 
         // Get all normals
-        PopulateVerticesAndNormals(selfBoxCollider, ref listEdgeNormals, ref listSelfVertices);
+        PopulateVerticesAndNormals(_selfBoxCollider, ref listEdgeNormals, ref listSelfVertices);
         PopulateVerticesAndNormals(boxCollider, ref listEdgeNormals, ref listTargetVertices);
 
-        // Debug!!!
-        // foreach (var vertice in listVertices)
-        // {
-        //     Debug.Log(vertice);
-        // }
-
         // For each normal vector...
+        bool haveGaps = false;
         foreach (var normal in listEdgeNormals)
         {
-            float selfMin, selfMax;
-            float targetMin, targetMax;
+            // Debug.Log("Normal: " + normal);
 
-            bool isSetSelfState = false, isSetTargetState = false;
+            // Find min and max value of all vertices' projection onto the current normal vector, for self collider
+            Vector2 selfMinPoint = Vector2.zero, selfMaxPoint = Vector2.zero;
+            FindMinMaxProjection(ref selfMinPoint, ref selfMaxPoint, listSelfVertices, normal);
 
-            Debug.Log("Normal: " + normal);
+            // Debug.Log("Min: " + selfMinPoint);
+            // Debug.Log("Max: " + selfMaxPoint);
 
-            // Project all vertices of self collider onto it, to find max and min
-            foreach (var vertice in listSelfVertices)
+            // Similarly, but for target collider
+            Vector2 targetMinPoint = Vector2.zero, targetMaxPoint = Vector2.zero;
+            FindMinMaxProjection(ref targetMinPoint, ref targetMaxPoint, listTargetVertices, normal);
+
+            // Debug.Log("Min: " + targetMinPoint);
+            // Debug.Log("Max: " + targetMaxPoint);
+
+            // Check for overlapping
+            haveGaps |= CheckForOverlap(selfMinPoint, selfMaxPoint, targetMinPoint, targetMaxPoint);
+            if (haveGaps)
             {
-                Vector2 projectedPoint = Vector3.Project(vertice, normal);
-
-                if (!isSetSelfState)
-                {
-                    // TODO...
-                }
+                break;
             }
+        }
 
-            // Do the same for target collider
+        if (!haveGaps)
+        {
+            // Debug.Log("Collide");
+            ChangeColorOnCollision();
 
-
-
-            break;
+            InvokeCollisionDetection(this.gameObject);
+            InvokeCollisionDetection(boxCollider.gameObject);
+        }
+        else
+        {
+            ChangeColorOnCollision(true);
         }
     }
 
@@ -163,5 +191,84 @@ public class CustomRigidBody : MonoBehaviour
         listVertices.Add(colliderTransform.TransformPoint(localTopRight));
         listVertices.Add(colliderTransform.TransformPoint(localBotLeft));
         listVertices.Add(colliderTransform.TransformPoint(localBotRight));
+    }
+
+    private void FindMinMaxProjection(ref Vector2 min, ref Vector2 max, List<Vector2> vertices, Vector2 projectionBase)
+    {
+        bool isInitState = false;
+
+        foreach (var vertice in vertices)
+        {
+            Vector2 projectedPoint = Vector3.Project(vertice, projectionBase);
+
+            if (!isInitState)
+            {
+                min = max = projectedPoint;
+                isInitState = true;
+
+                continue;
+            }
+
+            if (IsNewMin(min, projectedPoint))
+            {
+                min = projectedPoint;
+            }
+
+            if (IsNewMax(max, projectedPoint))
+            {
+                max = projectedPoint;
+            }
+        }
+    }
+
+    private bool IsNewMin(Vector2 currentMin, Vector2 checkValue)
+    {
+        return checkValue.x < currentMin.x || (checkValue.x == currentMin.x && checkValue.y < currentMin.y);
+    }
+
+    private bool IsNewMax(Vector2 currentMax, Vector2 checkValue)
+    {
+        return checkValue.x > currentMax.x || (checkValue.x == currentMax.x && checkValue.y > currentMax.y);
+    }
+
+    private bool CheckForOverlap(Vector2 selfMinPoint, Vector2 selfMaxPoint, Vector2 targetMinPoint, Vector2 targetMaxPoint)
+    {
+        if (selfMinPoint.x > targetMaxPoint.x || targetMinPoint.x > selfMaxPoint.x)
+        {
+            return true;
+        }
+        
+        if (selfMinPoint.x == targetMaxPoint.x && selfMinPoint.y > targetMaxPoint.y)
+        {
+            return true;
+        }
+
+        if (targetMinPoint.x == selfMaxPoint.x && targetMinPoint.y > selfMaxPoint.y)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private void ChangeColorOnCollision(bool isRevert = false)
+    {
+        if (isRevert)
+        {
+            GetComponent<SpriteRenderer>().color = _originalColor;
+        }
+        else
+        {
+            GetComponent<SpriteRenderer>().color = Color.green;
+        }
+    }
+
+    private void InvokeCollisionDetection(GameObject targetObject)
+    {
+        CollisionDetectionSubscriber collisionDetectionComponent = targetObject.GetComponent<CollisionDetectionSubscriber>();
+        if (collisionDetectionComponent != null)
+        {
+            collisionDetectionComponent.OnCollisionStayCustom();
+        }
     }
 }

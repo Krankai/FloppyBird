@@ -684,7 +684,7 @@ GameObject:
   - component: {fileID: 1710482493}
   - component: {fileID: 1710482492}
   m_Layer: 0
-  m_Name: PhysicsEngineManager
+  m_Name: CustomPhysicsEngine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -703,6 +703,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gravityAcceleration: 9.80665
+  _maximumUpwardDistance: 5
 --- !u!4 &1710482493
 Transform:
   m_ObjectHideFlags: 0

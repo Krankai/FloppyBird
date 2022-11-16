@@ -4,14 +4,18 @@ using UnityEngine;
 
 public class ParallaxBackground : MonoBehaviour
 {
+    public enum Direction
+    {
+        Left = -1,
+        Right = 1,
+    }
+
     [Header("Overall Settings")]
     [SerializeField] private Direction _movingDirection = Direction.Left;
 
     [SerializeField] private float _overallSpeed = 5f;
 
     [Header("Layer Settings")]
-    [SerializeField] private SpriteRenderer _baseLayerSprite;
-
     [SerializeField] private float[] _layerParallaxEffect;
 
     [SerializeField] private SpriteRenderer[] _layerSprites;
@@ -21,6 +25,8 @@ public class ParallaxBackground : MonoBehaviour
     private float[] _layerStartPositionX;
 
     private float[] _layerBoundSizeX;
+
+    private Vector3 _triviaRightVector = Vector3.right;
 
     private void Start()
     {
@@ -49,7 +55,7 @@ public class ParallaxBackground : MonoBehaviour
 
     private void MoveLayer(SpriteRenderer layerSprite, float parallaxEffect)
     {
-        layerSprite.transform.position += Vector3.right * (int)_movingDirection * _overallSpeed * parallaxEffect * Time.deltaTime;
+        layerSprite.transform.position += _triviaRightVector * (int)_movingDirection * _overallSpeed * parallaxEffect * Time.deltaTime;
     }
 
     private void RepositionLayer(SpriteRenderer layerSprite, float startPositionX, float boundSizeX)
@@ -59,10 +65,4 @@ public class ParallaxBackground : MonoBehaviour
             layerSprite.transform.position = new Vector2(startPositionX, layerSprite.transform.position.y);
         }
     }
-}
-
-public enum Direction
-{
-    Left = -1,
-    Right = 1,
 }

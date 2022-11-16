@@ -53,10 +53,14 @@ public class SpawnManager : MonoBehaviour
         GenerateSpawnPositions();
 
         var upperPipe = Instantiate(_pipePrefab, _spawnUpperPosition, _pipePrefab.transform.rotation, _parentTransform);
-        upperPipe.transform.localScale = new Vector2(upperPipe.transform.localScale.x, _upperScaleY);
+        var upperPipeLocalScale = upperPipe.transform.localScale;
+        upperPipe.transform.localScale = new Vector3(upperPipeLocalScale.x, _upperScaleY, upperPipeLocalScale.z);
 
         var lowerPipe = Instantiate(_pipePrefab, _spawnLowerPosition, _inversePrefabRotation, _parentTransform);
-        lowerPipe.transform.localScale = new Vector2(lowerPipe.transform.localScale.x, _lowerScaleY);
+        var lowerPipeLocalScale = lowerPipe.transform.localScale;
+        lowerPipe.transform.localScale = new Vector3(lowerPipeLocalScale.x, _lowerScaleY, lowerPipeLocalScale.z);
+
+        CustomPhysicsEngine.Instance.UpdateColliders();
     }
 
     private void GenerateSpawnPositions()

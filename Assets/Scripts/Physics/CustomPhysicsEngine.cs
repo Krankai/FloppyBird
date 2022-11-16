@@ -7,23 +7,39 @@ public class CustomPhysicsEngine : MonoBehaviour
     // Singleton pattern
     public static CustomPhysicsEngine Instance = null;
 
-    [Header("Universal Settings")]
+    [Header("Gravity")]
+    [Tooltip("Please do not change this. Update the modifier below instead")]
     [SerializeField] private float _gravityAcceleration = 9.80665f;
 
-    [Header("Tweak Settings")]
-    [SerializeField] private float _maximumUpwardDistance = 1.0f;       // distance at which custom rigid body object will be put on brake
+    [SerializeField] private float _gravityModifier = 1.5f;
 
-    [SerializeField] private float _brakeVelocity = 3.0f;
+    [Header("Upward Impulse")]
+    [SerializeField] private float _impulseForce = 25f;
+
+    // [SerializeField] private float _maximumUpwardDistance = 2f;       // distance at which custom rigid body object will be put on brake
+
+    [SerializeField] private float _minimumVelocity = -9f;
+
+    [SerializeField] private float _brakeVelocity = 5f;
 
     private Collider2D[] _colliders;                                    // custom rigid body will use this list to check for potential collision with collider objects
 
-    public float GetGravityAcceleration => _gravityAcceleration;
+    public float GravityAcceleration => _gravityAcceleration * _gravityModifier;
 
-    public float GetMaxUpwardDistance => _maximumUpwardDistance;
+    public float ImpulseForce => _impulseForce;
 
-    public float GetBrakeVelocity => _brakeVelocity;
+    // public float MaxUpwardDistance => _maximumUpwardDistance;
 
-    public Collider2D[] GetColliders => _colliders;
+    public float MinimumVelocity => _minimumVelocity;
+
+    public float BrakeVelocity => _brakeVelocity;
+
+    public Collider2D[] Colliders => _colliders;
+
+    public void UpdateColliders()
+    {
+        _colliders = FindObjectsOfType<Collider2D>();
+    }
 
     private void Awake()
     {
@@ -39,13 +55,6 @@ public class CustomPhysicsEngine : MonoBehaviour
 
     private void Start()
     {
-        _colliders = FindObjectsOfType<Collider2D>();
-
-        // foreach (var collider in _colliders)
-        // {
-        //     if (!collider.isActiveAndEnabled) continue;
-
-        //     Debug.Log(collider.gameObject.transform.position);
-        // }
+        UpdateColliders();
     }
 }

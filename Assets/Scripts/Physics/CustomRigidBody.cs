@@ -49,7 +49,8 @@ public class CustomRigidBody : MonoBehaviour
     private void FixedUpdate()
     {
         ApplyGravity();
-        ApplyImpulseForce();        // check for (and apply) 'upward' impulse
+
+        ApplyImpulseForce();
 
         // Tweak modification to mimic 'rea' gameplay (Flappy Bird)
         TweakVelocity();
@@ -63,7 +64,7 @@ public class CustomRigidBody : MonoBehaviour
     {
         if (!_isAppplyGravity) return;
 
-        Velocity += CustomPhysicsEngine.Instance.GetGravityAcceleration * Time.fixedDeltaTime;
+        Velocity += CustomPhysicsEngine.Instance.GravityAcceleration * Time.fixedDeltaTime;
     }
 
     private void ApplyImpulseForce()
@@ -82,9 +83,10 @@ public class CustomRigidBody : MonoBehaviour
     private void TweakVelocity()
     {
         if (!_isUpdateImpactPosition) return;
-        if (Vector3.Distance(_positionAtImpact, this.transform.position) < CustomPhysicsEngine.Instance.GetMaxUpwardDistance) return;
+        //if (Vector3.Distance(_positionAtImpact, this.transform.position) < CustomPhysicsEngine.Instance.MaxUpwardDistance) return;
+        if (Velocity >= CustomPhysicsEngine.Instance.MinimumVelocity) return;
 
-        Velocity = Mathf.Sign(Velocity) * CustomPhysicsEngine.Instance.GetBrakeVelocity;
+        Velocity = Mathf.Sign(Velocity) * CustomPhysicsEngine.Instance.BrakeVelocity;
         _isUpdateImpactPosition = false;
     }
 
@@ -96,23 +98,23 @@ public class CustomRigidBody : MonoBehaviour
 
     private void ProcessCollision()
     {
-        Collider2D[] colliders = CustomPhysicsEngine.Instance.GetColliders;
+        Collider2D[] colliders = CustomPhysicsEngine.Instance.Colliders;
         foreach (var collider in colliders)
         {
             BoxCollider2D boxCollider = (BoxCollider2D)collider;
 
             if (boxCollider == null || !boxCollider.isActiveAndEnabled) continue;
-            if (this.gameObject.GetInstanceID() == collider.gameObject.GetInstanceID()) continue;
+            if (this.gameObject.GetInstanceID() == boxCollider.gameObject.GetInstanceID()) continue;
+
+            // Debug.Log("Object at " + this.transform.position + " collide with object at " + boxCollider.transform.position);
 
             if (IsInCollisionWith(boxCollider))
             {
                 // Debug.Log("Collide");
-                ChangeColorOnCollision();
                 RegisterCollidedObject(boxCollider);
             }
             else
             {
-                ChangeColorOnCollision(true);
                 UnRegisterCollidedObject(boxCollider);
             }
         }
@@ -143,8 +145,14 @@ public class CustomRigidBody : MonoBehaviour
             Vector2 targetMinPoint = Vector2.zero, targetMaxPoint = Vector2.zero;
             FindMinMaxProjection(ref targetMinPoint, ref targetMaxPoint, listTargetVertices, normal);
 
+            // Debug.Log("Self min: " + selfMinPoint);
+            // Debug.Log("Self max: " + selfMaxPoint);
+            // Debug.Log("Target min: " + targetMinPoint);
+            // Debug.Log("Target max: " + targetMaxPoint);
+
             // Check for overlapping
             haveGaps |= CheckForOverlap(selfMinPoint, selfMaxPoint, targetMinPoint, targetMaxPoint);
+            // Debug.Log("Gap: " + haveGaps);
             if (haveGaps)
             {
                 break;
@@ -244,33 +252,21 @@ public class CustomRigidBody : MonoBehaviour
         return false;
     }
 
-    private void ChangeColorOnCollision(bool isRevert = false)
-    {
-        if (isRevert)
-        {
-            GetComponent<SpriteRenderer>().color = _originalColor;
-        }
-        else
-        {
-            GetComponent<SpriteRenderer>().color = Color.green;
-        }
-    }
-
     private void RegisterCollidedObject(BoxCollider2D collider)
     {
-        InvokeCollisionDetection(this.gameObject, true);
-        InvokeCollisionDetection(collider.gameObject, true);
+        InvokeCollisionDetection(this.gameObject, collider.gameObject, true);
+        InvokeCollisionDetection(collider.gameObject, this.gameObject, true);
     }
 
     private void UnRegisterCollidedObject(BoxCollider2D collider)
     {
-        InvokeCollisionDetection(this.gameObject, false);
-        InvokeCollisionDetection(collider.gameObject, false);
+        InvokeCollisionDetection(this.gameObject, collider.gameObject, false);
+        InvokeCollisionDetection(collider.gameObject, this.gameObject, false);
     }
 
-    private void InvokeCollisionDetection(GameObject targetObject, bool isCollide)
+    private void InvokeCollisionDetection(GameObject selfObject, GameObject targetObject, bool isCollide)
     {
-        CollisionDetectionSubscriber collisionDetectionComponent = targetObject.GetComponent<CollisionDetectionSubscriber>();
+        CollisionDetectionSubscriber collisionDetectionComponent = selfObject.GetComponent<CollisionDetectionSubscriber>();
         if (collisionDetectionComponent != null)
         {
             collisionDetectionComponent.OnInvokeCollision(targetObject, isCollide);

@@ -99,17 +99,29 @@ public class CustomRigidBody : MonoBehaviour
         Collider2D[] colliders = CustomPhysicsEngine.Instance.GetColliders;
         foreach (var collider in colliders)
         {
-            if (collider == null) continue;
+            BoxCollider2D boxCollider = (BoxCollider2D)collider;
+
+            if (boxCollider == null || !boxCollider.isActiveAndEnabled) continue;
             if (this.gameObject.GetInstanceID() == collider.gameObject.GetInstanceID()) continue;
 
-            BoxCollider2D boxCollider = (BoxCollider2D)collider;
-            CheckCollision(boxCollider);
+            if (IsInCollisionWith(boxCollider))
+            {
+                // Debug.Log("Collide");
+                ChangeColorOnCollision();
+                RegisterCollidedObject(boxCollider);
+            }
+            else
+            {
+                ChangeColorOnCollision(true);
+                UnRegisterCollidedObject(boxCollider);
+            }
         }
     }
 
-    private void CheckCollision(BoxCollider2D boxCollider)
+    // Check collision based on Separation Axis Theorem (SAT)
+    private bool IsInCollisionWith(BoxCollider2D boxCollider)
     {
-        if (_selfBoxCollider == null || boxCollider == null) return;
+        if (_selfBoxCollider == null || boxCollider == null) return false;
 
         List<Vector2> listEdgeNormals = new List<Vector2>();
         List<Vector2> listSelfVertices = new List<Vector2>();
@@ -123,21 +135,13 @@ public class CustomRigidBody : MonoBehaviour
         bool haveGaps = false;
         foreach (var normal in listEdgeNormals)
         {
-            // Debug.Log("Normal: " + normal);
-
             // Find min and max value of all vertices' projection onto the current normal vector, for self collider
             Vector2 selfMinPoint = Vector2.zero, selfMaxPoint = Vector2.zero;
             FindMinMaxProjection(ref selfMinPoint, ref selfMaxPoint, listSelfVertices, normal);
 
-            // Debug.Log("Min: " + selfMinPoint);
-            // Debug.Log("Max: " + selfMaxPoint);
-
             // Similarly, but for target collider
             Vector2 targetMinPoint = Vector2.zero, targetMaxPoint = Vector2.zero;
             FindMinMaxProjection(ref targetMinPoint, ref targetMaxPoint, listTargetVertices, normal);
-
-            // Debug.Log("Min: " + targetMinPoint);
-            // Debug.Log("Max: " + targetMaxPoint);
 
             // Check for overlapping
             haveGaps |= CheckForOverlap(selfMinPoint, selfMaxPoint, targetMinPoint, targetMaxPoint);
@@ -147,18 +151,7 @@ public class CustomRigidBody : MonoBehaviour
             }
         }
 
-        if (!haveGaps)
-        {
-            // Debug.Log("Collide");
-            ChangeColorOnCollision();
-
-            InvokeCollisionDetection(this.gameObject);
-            InvokeCollisionDetection(boxCollider.gameObject);
-        }
-        else
-        {
-            ChangeColorOnCollision(true);
-        }
+        return !haveGaps;
     }
 
     private void PopulateVerticesAndNormals(BoxCollider2D boxCollider, ref List<Vector2> listNormals, ref List<Vector2> listVertices)
@@ -263,12 +256,24 @@ public class CustomRigidBody : MonoBehaviour
         }
     }
 
-    private void InvokeCollisionDetection(GameObject targetObject)
+    private void RegisterCollidedObject(BoxCollider2D collider)
+    {
+        InvokeCollisionDetection(this.gameObject, true);
+        InvokeCollisionDetection(collider.gameObject, true);
+    }
+
+    private void UnRegisterCollidedObject(BoxCollider2D collider)
+    {
+        InvokeCollisionDetection(this.gameObject, false);
+        InvokeCollisionDetection(collider.gameObject, false);
+    }
+
+    private void InvokeCollisionDetection(GameObject targetObject, bool isCollide)
     {
         CollisionDetectionSubscriber collisionDetectionComponent = targetObject.GetComponent<CollisionDetectionSubscriber>();
         if (collisionDetectionComponent != null)
         {
-            collisionDetectionComponent.OnCollisionStayCustom();
+            collisionDetectionComponent.OnInvokeCollision(targetObject, isCollide);
         }
     }
 }

@@ -20,38 +20,48 @@ public class CollisionDetectionSubscriber : MonoBehaviour
             if (!foundMatchedCollider)
             {
                 // Enter
-                OnCollisionEnterCustom();
+                OnCollisionEnterCustom(targetObject);
 
                 _colliders.Add(targetObject);
             }
             else
             {
                 // Stay
-                OnCollisionStayCustom();
+                OnCollisionStayCustom(targetObject);
             }
         }
         else if (foundMatchedCollider)
         {
             // Exit
-            OnCollisionExitCustom();
+            OnCollisionExitCustom(targetObject);
 
             _colliders.Remove(targetObject);
         }
     }
 
-    public void OnCollisionEnterCustom()
+    public void OnCollisionEnterCustom(GameObject collideObject)
     {
         // Debug.Log("OnCollisionEnter: " + this.gameObject.name + " at " + this.transform.position);
+
+        if (CompareTag("Player") && collideObject.CompareTag("Obstacle"))
+        {
+            GameManager.Instance.GameOver(false);
+        }
     }
 
-    public void OnCollisionStayCustom()
+    public void OnCollisionStayCustom(GameObject collideObject)
     {
         // Debug.Log("OnCollisionStay: " + this.gameObject.name + " at " + this.transform.position);
     }
 
-    public void OnCollisionExitCustom()
+    public void OnCollisionExitCustom(GameObject collideObject)
     {
         // Debug.Log("OnCollisionExit: " + this.gameObject.name + " at " + this.transform.position);
+
+        if (CompareTag("Player") && collideObject.CompareTag("ScoreTracker"))
+        {
+            GameManager.Instance.UpdateScore();
+        }
     }
 
     private void Awake()
@@ -61,7 +71,10 @@ public class CollisionDetectionSubscriber : MonoBehaviour
 
     private void Start()
     {
-        _originalColor = GetComponent<SpriteRenderer>().color;
+        if (CompareTag("Player"))
+        {
+            _originalColor = GetComponent<SpriteRenderer>().color;
+        }
     }
 
     private void Update()

@@ -7,7 +7,11 @@ public class SpawnManager : MonoBehaviour
     [Header("Asset")]
     [SerializeField] private GameObject _pipePrefab;
 
-    [SerializeField] private Transform _parentTransform;
+    [SerializeField] private Transform _pipeParentTransform;
+
+    [SerializeField] private GameObject _scoreTrackerPrefab;
+
+    [SerializeField] private Transform _trackersParentTransform;
 
     [Header("Spawning Positions")]
     [SerializeField] private float _spawnInterval = 1.5f;
@@ -34,12 +38,15 @@ public class SpawnManager : MonoBehaviour
 
     private float _pipeSpriteHeight;
 
+    private float _pipeSpriteWidth;
+
     private void Awake()
     {
         _inversePrefabRotation = Quaternion.Inverse(_pipePrefab.transform.rotation);
 
         var spriteRenderer = _pipePrefab.GetComponent<SpriteRenderer>();
         _pipeSpriteHeight = spriteRenderer.sprite.bounds.size.y;
+        _pipeSpriteWidth = spriteRenderer.sprite.bounds.size.x;
     }
 
     private void Start()
@@ -52,15 +59,11 @@ public class SpawnManager : MonoBehaviour
         GenerateHeightScale();
         GenerateSpawnPositions();
 
-        var upperPipe = Instantiate(_pipePrefab, _spawnUpperPosition, _pipePrefab.transform.rotation, _parentTransform);
-        var upperPipeLocalScale = upperPipe.transform.localScale;
-        upperPipe.transform.localScale = new Vector3(upperPipeLocalScale.x, _upperScaleY, upperPipeLocalScale.z);
-
-        var lowerPipe = Instantiate(_pipePrefab, _spawnLowerPosition, _inversePrefabRotation, _parentTransform);
-        var lowerPipeLocalScale = lowerPipe.transform.localScale;
-        lowerPipe.transform.localScale = new Vector3(lowerPipeLocalScale.x, _lowerScaleY, lowerPipeLocalScale.z);
+        SetPipePositionAndScale();
 
         CustomPhysicsEngine.Instance.UpdateColliders();
+
+        SpawnScoreTracker();
     }
 
     private void GenerateSpawnPositions()
@@ -84,5 +87,24 @@ public class SpawnManager : MonoBehaviour
 
         _upperScaleY = (_backgroundHeight / 2f - upperGapSize) / _pipeSpriteHeight;
         _lowerScaleY = (_backgroundHeight / 2f - lowerGapSize) / _pipeSpriteHeight;
+    }
+
+    private void SetPipePositionAndScale()
+    {
+        var upperPipe = Instantiate(_pipePrefab, _spawnUpperPosition, _pipePrefab.transform.rotation, _pipeParentTransform);
+        var upperPipeLocalScale = upperPipe.transform.localScale;
+        upperPipe.transform.localScale = new Vector3(upperPipeLocalScale.x, _upperScaleY, upperPipeLocalScale.z);
+
+        var lowerPipe = Instantiate(_pipePrefab, _spawnLowerPosition, _inversePrefabRotation, _pipeParentTransform);
+        var lowerPipeLocalScale = lowerPipe.transform.localScale;
+        lowerPipe.transform.localScale = new Vector3(lowerPipeLocalScale.x, _lowerScaleY, lowerPipeLocalScale.z);
+    }
+
+    private void SpawnScoreTracker()
+    {
+        float positionX = Mathf.Max(_spawnUpperPosition.x, _spawnLowerPosition.x) + _pipeSpriteWidth / 2f;
+        Vector2 spawnLocation = new Vector3(positionX, 0);
+
+        Instantiate(_scoreTrackerPrefab, spawnLocation, _scoreTrackerPrefab.transform.rotation, _trackersParentTransform);
     }
 }

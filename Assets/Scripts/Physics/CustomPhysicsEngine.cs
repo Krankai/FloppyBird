@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CustomPhysicsEngine : MonoBehaviour
 {
-    // Singleton pattern
+    // Singleton
     public static CustomPhysicsEngine Instance = null;
 
     [Header("Gravity")]

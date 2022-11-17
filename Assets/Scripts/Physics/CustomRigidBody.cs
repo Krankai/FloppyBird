@@ -46,7 +46,8 @@ public class CustomRigidBody : MonoBehaviour
 
     private void Start()
     {
-
+        _isAppplyGravity = false;
+        Invoke("EnableGravity", GameManager.Instance.GetStartDelay());
     }
 
     private void FixedUpdate()
@@ -63,6 +64,11 @@ public class CustomRigidBody : MonoBehaviour
         UpdateRigidBodyPosition();
 
         ProcessCollision();
+    }
+
+    private void EnableGravity()
+    {
+        _isAppplyGravity = true;
     }
 
     private void ApplyGravity()
@@ -103,7 +109,7 @@ public class CustomRigidBody : MonoBehaviour
 
     private void ProcessCollision()
     {
-        Collider2D[] colliders = CustomPhysicsEngine.Instance.Colliders;
+        List<BoxCollider2D> colliders = CustomPhysicsEngine.Instance.Colliders;
         foreach (var collider in colliders)
         {
             BoxCollider2D boxCollider = (BoxCollider2D)collider;

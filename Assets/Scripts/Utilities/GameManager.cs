@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int _maximumScore = 10;
 
     [SerializeField] private float _deadZoneLimit = -12f;
+    
+    [SerializeField] private int _startDelay = 4;
 
     [field:Header("Status")]
     [field:SerializeField] public int CurrentScore { get; private set; }
@@ -28,9 +31,16 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private UnityEvent _gameOverSucceedEvents;
 
-    public void UpdateScore() => ++CurrentScore;
+    [SerializeField] private UnityEvent _pauseEvents;
 
     public float GetDeadZoneLimit() => _deadZoneLimit;
+
+    public int GetStartDelay() => _startDelay;
+
+    public void UpdateScore()
+    {
+        UIManager.Instance.OnUpdateScore(++CurrentScore);
+    }
 
     public void GameOver(bool isWinner)
     {
@@ -51,6 +61,12 @@ public class GameManager : MonoBehaviour
     {
         IsPaused = !IsPaused;
         Time.timeScale = IsPaused ? 0 : 1;
+        _pauseEvents.Invoke();
+    }
+
+    public void TryAgain()
+    {
+        SceneManager.LoadScene("MainMenu");
     }
 
     private void Awake()

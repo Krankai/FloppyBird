@@ -22,7 +22,7 @@ public class CustomPhysicsEngine : MonoBehaviour
 
     [SerializeField] private float _brakeVelocity = 5f;
 
-    private Collider2D[] _colliders;                                    // custom rigid body will use this list to check for potential collision with collider objects
+    private List<BoxCollider2D> _colliders;                                    // custom rigid body will use this list to check for potential collision with collider objects
 
     public float GravityAcceleration => _gravityAcceleration * _gravityModifier;
 
@@ -34,11 +34,20 @@ public class CustomPhysicsEngine : MonoBehaviour
 
     public float BrakeVelocity => _brakeVelocity;
 
-    public Collider2D[] Colliders => _colliders;
+    public List<BoxCollider2D> Colliders => _colliders;
 
     public void UpdateColliders()
     {
-        _colliders = FindObjectsOfType<Collider2D>();
+        var colliderArray = FindObjectsOfType<BoxCollider2D>();
+        for (int i = 0; i < colliderArray.Length; ++i)
+        {
+            _colliders.Add(colliderArray[i]);
+        }
+    }
+
+    public void UpdateCollider(BoxCollider2D newCollider)
+    {
+        _colliders.Add(newCollider);
     }
 
     private void Awake()
@@ -51,6 +60,8 @@ public class CustomPhysicsEngine : MonoBehaviour
         {
             Destroy(this.gameObject);
         }
+
+        _colliders = new List<BoxCollider2D>();
     }
 
     private void Start()

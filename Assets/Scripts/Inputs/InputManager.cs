@@ -30,6 +30,7 @@ public class InputManager : MonoBehaviour
             if (_customPhysicsBody != null && _customPhysicsBody.CompareTag("Player"))
             {
                 _customPhysicsBody.AddForce(CustomPhysicsEngine.Instance.ImpulseForce);
+                AudioManager.Instance.OnPlayJumpSound();
             }
         }
 

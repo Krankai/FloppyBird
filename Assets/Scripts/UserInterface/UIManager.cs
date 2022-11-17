@@ -75,12 +75,15 @@ public class UIManager : MonoBehaviour
         while (startValue > 0)
         {
             _countdownText.SetText(startValue.ToString());
-            yield return _triviaWaitTimer1Sec;
+            AudioManager.Instance.OnPlayCountdownSound();
 
+            yield return _triviaWaitTimer1Sec;
             --startValue;
         }
 
         _countdownText.SetText("Start");
+        AudioManager.Instance.OnPlayStartSound();
+
         yield return _triviaWaitTimer1Sec;
 
         _countdownText.gameObject.SetActive(false);

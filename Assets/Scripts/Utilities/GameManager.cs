@@ -40,6 +40,7 @@ public class GameManager : MonoBehaviour
     public void UpdateScore()
     {
         UIManager.Instance.OnUpdateScore(++CurrentScore);
+        AudioManager.Instance.OnPlayScoreSound();
     }
 
     public void GameOver(bool isWinner)
@@ -64,9 +65,9 @@ public class GameManager : MonoBehaviour
         _pauseEvents.Invoke();
     }
 
-    public void TryAgain()
+    public void MoveToScene(string sceneName)
     {
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene(sceneName);
     }
 
     private void Awake()

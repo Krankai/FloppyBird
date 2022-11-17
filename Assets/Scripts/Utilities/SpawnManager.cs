@@ -40,6 +40,11 @@ public class SpawnManager : MonoBehaviour
 
     private float _pipeSpriteWidth;
 
+    public void DisableSpawning()
+    {
+        CancelInvoke();
+    }
+
     private void Awake()
     {
         _inversePrefabRotation = Quaternion.Inverse(_pipePrefab.transform.rotation);

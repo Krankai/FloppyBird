@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6731518669482918941}
   - component: {fileID: 6731518669482918940}
   - component: {fileID: 6731518669482918939}
+  - component: {fileID: 1401446325}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -99,7 +100,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d9cc5f289e7dbc4481b400334104af3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetCollider: {fileID: 0}
   <Velocity>k__BackingField: 0
   _isAppplyGravity: 1
   _mass: 1
@@ -141,3 +141,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd73645094001504c989366ad6ae720a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1401446325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6731518669482918912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bb40a6291e8959468da27eec14f4324, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _winRotationRadius: 3
+  _winRotationAngle: -180
+  _loseRotationAngle: 60
+  _loseFallingSpeed: 5

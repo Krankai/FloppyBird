@@ -193,7 +193,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6731518669482918941, guid: 0a3bd78a7ae06e249b89a89a8f2dfd20, type: 3}
       propertyPath: _isAppplyGravity
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6731518669482918942, guid: 0a3bd78a7ae06e249b89a89a8f2dfd20, type: 3}
       propertyPath: m_RootOrder
@@ -402,6 +402,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &773891413 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6731518669482918912, guid: 0a3bd78a7ae06e249b89a89a8f2dfd20, type: 3}
+  m_PrefabInstance: {fileID: 131350554}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &924208042 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1441814713139356188, guid: 5773076d69773d4469ec8e07231d7905, type: 3}
@@ -477,6 +482,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1441814713139356188, guid: 5773076d69773d4469ec8e07231d7905, type: 3}
   m_PrefabInstance: {fileID: 973612032}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &992826557 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7207944431670720529, guid: dee3e6a5e11131947aab080176ab3e40, type: 3}
+  m_PrefabInstance: {fileID: 7207944431465771476}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65bf697f1f3794741949dc5d5553559b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1162328530
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -538,6 +554,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0c3fd9f8c18b62447969ab3503f3d9bd, type: 3}
+--- !u!114 &1169951501 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7162274225759680688, guid: 0c3fd9f8c18b62447969ab3503f3d9bd, type: 3}
+  m_PrefabInstance: {fileID: 1162328530}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ab21b81d573ed24db65df619fad5ffe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1177168260
 GameObject:
   m_ObjectHideFlags: 0
@@ -591,12 +618,28 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6731518669482918941, guid: 0a3bd78a7ae06e249b89a89a8f2dfd20, type: 3}
   m_PrefabInstance: {fileID: 131350554}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 773891413}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0d9cc5f289e7dbc4481b400334104af3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1401446325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 773891413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bb40a6291e8959468da27eec14f4324, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _winRotationRadius: 3
+  _winRotationAngle: -180
+  _loseRotationAngle: 60
+  _loseFallingSpeed: 5
 --- !u!1 &1836395820
 GameObject:
   m_ObjectHideFlags: 0
@@ -626,8 +669,162 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 764c530f3b2ef7f4a92f7d5fefb4f18b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Score>k__BackingField: 0
-  _maximumScore: 10
+  _playerTransform: {fileID: 0}
+  _maximumScore: 2
+  _deadZoneLimit: -12
+  <CurrentScore>k__BackingField: 0
+  <IsFinish>k__BackingField: 0
+  <IsPaused>k__BackingField: 0
+  _gameOverFailEvents:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1169951501}
+        m_TargetAssemblyTypeName: InputManager, Assembly-CSharp
+        m_MethodName: FakePause
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1177168262}
+        m_TargetAssemblyTypeName: HorizontalMoving, Assembly-CSharp
+        m_MethodName: FakePause
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 277044580}
+        m_TargetAssemblyTypeName: HorizontalMoving, Assembly-CSharp
+        m_MethodName: FakePause
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1401446320}
+        m_TargetAssemblyTypeName: CustomRigidBody, Assembly-CSharp
+        m_MethodName: DisablePhysics
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 992826557}
+        m_TargetAssemblyTypeName: SpawnManager, Assembly-CSharp
+        m_MethodName: DisableSpawning
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1401446325}
+        m_TargetAssemblyTypeName: PlayerAnimation, Assembly-CSharp
+        m_MethodName: LoseAnimation
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _gameOverSucceedEvents:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 992826557}
+        m_TargetAssemblyTypeName: SpawnManager, Assembly-CSharp
+        m_MethodName: DisableSpawning
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1169951501}
+        m_TargetAssemblyTypeName: InputManager, Assembly-CSharp
+        m_MethodName: FakePause
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1177168262}
+        m_TargetAssemblyTypeName: HorizontalMoving, Assembly-CSharp
+        m_MethodName: FakePause
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 277044580}
+        m_TargetAssemblyTypeName: HorizontalMoving, Assembly-CSharp
+        m_MethodName: FakePause
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1401446320}
+        m_TargetAssemblyTypeName: CustomRigidBody, Assembly-CSharp
+        m_MethodName: DisablePhysics
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1401446325}
+        m_TargetAssemblyTypeName: PlayerAnimation, Assembly-CSharp
+        m_MethodName: WinAnimation
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!4 &1836395822
 Transform:
   m_ObjectHideFlags: 0

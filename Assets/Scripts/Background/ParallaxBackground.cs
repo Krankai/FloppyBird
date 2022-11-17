@@ -26,7 +26,15 @@ public class ParallaxBackground : MonoBehaviour
 
     private float[] _layerBoundSizeX;
 
+    private bool _isDisable = false;
+
     private Vector3 _triviaRightVector = Vector3.right;
+
+    public void FakePause()
+    {
+        // note: use only when lose
+        _isDisable = true;
+    }
 
     private void Start()
     {
@@ -44,6 +52,8 @@ public class ParallaxBackground : MonoBehaviour
 
     private void Update()
     {
+        if (_isDisable) return;
+
         for (int i = 0; i < _totalEffectiveLayers; ++i)
         {
             var layerSprite = _layerSprites[i];

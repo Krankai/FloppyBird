@@ -8,8 +8,18 @@ public class InputManager : MonoBehaviour
 
     [SerializeField] private CustomRigidBody _customPhysicsBody;
 
+    private bool _isDisable = false;
+
+    public void FakePause()
+    {
+        // note: use only when lose
+        _isDisable = true;
+    }
+
     private void Update()
     {
+        if (_isDisable) return;
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (_realPhysicsBody != null && _realPhysicsBody.CompareTag("Player"))
@@ -21,6 +31,11 @@ public class InputManager : MonoBehaviour
             {
                 _customPhysicsBody.AddForce(CustomPhysicsEngine.Instance.ImpulseForce);
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            GameManager.Instance.TogglePauseState();
         }
     }
 }

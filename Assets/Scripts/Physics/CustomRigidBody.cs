@@ -6,9 +6,6 @@ public class CustomRigidBody : MonoBehaviour
 {
     // Todo #1: generalize gravity direction
 
-    // DEBUG
-    public BoxCollider2D targetCollider;
-
     [field:SerializeField] public float Velocity { get; private set; } = 0f;
 
     [SerializeField] private bool _isAppplyGravity = true;
@@ -25,6 +22,8 @@ public class CustomRigidBody : MonoBehaviour
 
     private BoxCollider2D _selfBoxCollider;
 
+    private bool _isDisable = false;
+
     private Color _originalColor;
 
     public void AddForce(float forcePower)
@@ -32,6 +31,11 @@ public class CustomRigidBody : MonoBehaviour
         // Assumption: impuse force
         _impulseVelocity = forcePower / _mass;
         _hasImpulseImpact = true;
+    }
+
+    public void DisablePhysics()
+    {
+        _isDisable = true;
     }
 
     private void Awake()
@@ -42,12 +46,13 @@ public class CustomRigidBody : MonoBehaviour
 
     private void Start()
     {
-        // debug!!!
-        // CheckCollision(targetCollider);
+
     }
 
     private void FixedUpdate()
     {
+        if (_isDisable) return;
+
         ApplyGravity();
 
         ApplyImpulseForce();

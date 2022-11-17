@@ -34,12 +34,6 @@ public class InputManager : MonoBehaviour
     {
         if (_isDisable) return;
 
-        CheckInputsForImpulseForce();
-        CheckInputsForPause();
-    }
-
-    private void CheckInputsForImpulseForce()
-    {
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (_playerRigidBody != null && _playerRigidBody.CompareTag("Player"))
@@ -47,14 +41,13 @@ public class InputManager : MonoBehaviour
                 _playerRigidBody.AddForce(CustomPhysicsEngine.Instance.ImpulseForce);
                 AudioManager.Instance.OnPlayJumpSound();
             }
+            return;
         }
-    }
 
-    private void CheckInputsForPause()
-    {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             GameManager.Instance.TogglePauseState();
+            return;
         }
     }
 }

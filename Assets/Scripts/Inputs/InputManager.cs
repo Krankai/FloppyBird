@@ -4,9 +4,7 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
-    [SerializeField] private Rigidbody2D _realPhysicsBody;
-
-    [SerializeField] private CustomRigidBody _customPhysicsBody;
+    [SerializeField] private CustomRigidBody _playerRigidBody;
 
     private bool _isDisable = false;
 
@@ -16,24 +14,44 @@ public class InputManager : MonoBehaviour
         _isDisable = true;
     }
 
+    public void EnableReceiveInputs()
+    {
+        _isDisable = false;
+    }
+
+    private void Start()
+    {
+        if (_playerRigidBody == null)
+        {
+            _playerRigidBody = GameObject.Find("Player").GetComponent<CustomRigidBody>();
+        }
+
+        _isDisable = true;
+        Invoke("EnableReceiveInputs", GameManager.Instance.GetStartDelay());
+    }
+
     private void Update()
     {
         if (_isDisable) return;
 
+        CheckInputsForImpulseForce();
+        CheckInputsForPause();
+    }
+
+    private void CheckInputsForImpulseForce()
+    {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (_realPhysicsBody != null && _realPhysicsBody.CompareTag("Player"))
+            if (_playerRigidBody != null && _playerRigidBody.CompareTag("Player"))
             {
-                _realPhysicsBody.AddForce(new Vector2(0, CustomPhysicsEngine.Instance.ImpulseForce), ForceMode2D.Impulse);
-            }
-
-            if (_customPhysicsBody != null && _customPhysicsBody.CompareTag("Player"))
-            {
-                _customPhysicsBody.AddForce(CustomPhysicsEngine.Instance.ImpulseForce);
+                _playerRigidBody.AddForce(CustomPhysicsEngine.Instance.ImpulseForce);
                 AudioManager.Instance.OnPlayJumpSound();
             }
         }
+    }
 
+    private void CheckInputsForPause()
+    {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             GameManager.Instance.TogglePauseState();

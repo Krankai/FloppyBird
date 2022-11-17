@@ -45,7 +45,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pipePrefab: {fileID: 1441814713139356191, guid: 5773076d69773d4469ec8e07231d7905, type: 3}
-  _parentTransform: {fileID: 0}
+  _pipeParentTransform: {fileID: 0}
+  _scoreTrackerPrefab: {fileID: 8028126436291199992, guid: b238ec0edc5ddf24988558036635d33a, type: 3}
+  _trackersParentTransform: {fileID: 0}
   _spawnInterval: 1.5
   _spawnPostionMinX: 27
   _spawnPostionMaxX: 33

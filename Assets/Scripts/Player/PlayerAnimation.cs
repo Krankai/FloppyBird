@@ -41,6 +41,7 @@ public class PlayerAnimation : MonoBehaviour
             return;
         }
 
+        // Stop losing animation if out of viewing range
         if (_isLosing && transform.position.y >= GameManager.Instance.GetDeadZoneLimit())
         {
             transform.Rotate(transform.forward, _loseRotationAngle * Time.deltaTime);

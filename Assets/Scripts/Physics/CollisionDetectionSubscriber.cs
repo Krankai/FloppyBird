@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class CollisionDetectionSubscriber : MonoBehaviour
 {
-    // Triggered on collision via custom physics engine
+    // To receive notification for collision
+    
     private List<GameObject> _colliders;     // list of box colliders of all collided objects
 
-    // For debug
-    private Color _originalColor;
+    // For debugging
+    // private Color _originalColor;
 
     public void OnInvokeCollision(GameObject targetObject, bool isCollide)
     {
@@ -69,30 +70,31 @@ public class CollisionDetectionSubscriber : MonoBehaviour
         _colliders = new List<GameObject>();
     }
 
-    private void Start()
-    {
-        if (CompareTag("Player"))
-        {
-            _originalColor = GetComponent<SpriteRenderer>().color;
-        }
-    }
+    // private void Start()
+    // {
+    //     if (CompareTag("Player"))
+    //     {
+    //         _originalColor = GetComponent<SpriteRenderer>().color;
+    //     }
+    // }
 
-    private void Update()
-    {
-        ChangePlayerColorOnCollision();
-    }
+    // private void Update()
+    // {
+    //     ChangePlayerColorOnCollision();
+    // }
 
-    private void ChangePlayerColorOnCollision()
-    {
-        if (!CompareTag("Player")) return;
+    // For debugging
+    // private void ChangePlayerColorOnCollision()
+    // {
+    //     if (!CompareTag("Player")) return;
 
-        if (_colliders.Count > 0)
-        {
-            GetComponent<SpriteRenderer>().color = Color.green;
-        }
-        else
-        {
-            GetComponent<SpriteRenderer>().color = _originalColor;
-        }
-    }
+    //     if (_colliders.Count > 0)
+    //     {
+    //         GetComponent<SpriteRenderer>().color = Color.green;
+    //     }
+    //     else
+    //     {
+    //         GetComponent<SpriteRenderer>().color = _originalColor;
+    //     }
+    // }
 }

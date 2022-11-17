@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
 
     public void GameOver(bool isWinner)
     {
-        Debug.Log(isWinner ? "Winner" : "Loser");
+        // Debug.Log(isWinner ? "Winner" : "Loser");
         IsFinish = true;
 
         if (isWinner)

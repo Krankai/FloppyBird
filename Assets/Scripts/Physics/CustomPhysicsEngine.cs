@@ -16,19 +16,15 @@ public class CustomPhysicsEngine : MonoBehaviour
     [Header("Upward Impulse")]
     [SerializeField] private float _impulseForce = 25f;
 
-    // [SerializeField] private float _maximumUpwardDistance = 2f;       // distance at which custom rigid body object will be put on brake
-
     [SerializeField] private float _minimumVelocity = -9f;
 
     [SerializeField] private float _brakeVelocity = 5f;
 
-    private List<BoxCollider2D> _colliders;                                    // custom rigid body will use this list to check for potential collision with collider objects
+    private List<BoxCollider2D> _colliders;     // CustomRigidBody will use this list to check for potential collision with collider objects
 
     public float GravityAcceleration => _gravityAcceleration * _gravityModifier;
 
     public float ImpulseForce => _impulseForce;
-
-    // public float MaxUpwardDistance => _maximumUpwardDistance;
 
     public float MinimumVelocity => _minimumVelocity;
 

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
+    // TODO #1: Stop spawning if enough obstacles (and score tracker) to reach maximum score
+
     [Header("Asset")]
     [SerializeField] private GameObject _pipePrefab;
 
@@ -67,8 +69,6 @@ public class SpawnManager : MonoBehaviour
         SetPipePositionAndScale();
 
         SpawnScoreTracker();
-
-        //CustomPhysicsEngine.Instance.UpdateColliders();
     }
 
     private void GenerateSpawnPositions()

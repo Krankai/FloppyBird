@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class CustomRigidBody : MonoBehaviour
 {
-    // Todo #1: generalize gravity direction
+    // TODO #1: generalize gravity direction (currently, only downward)
+    // TODO #2: generalize impulse direction (currently, only upward)
 
     [field:SerializeField] public float Velocity { get; private set; } = 0f;
 
@@ -24,8 +25,6 @@ public class CustomRigidBody : MonoBehaviour
 
     private bool _isDisable = false;
 
-    private Color _originalColor;
-
     public void AddForce(float forcePower)
     {
         // Assumption: impuse force
@@ -41,7 +40,6 @@ public class CustomRigidBody : MonoBehaviour
     private void Awake()
     {
         _selfBoxCollider = GetComponent<BoxCollider2D>();
-        _originalColor = GetComponent<SpriteRenderer>().color;
     }
 
     private void Start()
@@ -58,8 +56,7 @@ public class CustomRigidBody : MonoBehaviour
 
         ApplyImpulseForce();
 
-        // Tweak modification to mimic 'rea' gameplay (Flappy Bird)
-        TweakVelocity();
+        TweakVelocity();        // tweak velocity to mimic Flappy Bird physics
 
         UpdateRigidBodyPosition();
 
@@ -74,7 +71,6 @@ public class CustomRigidBody : MonoBehaviour
     private void ApplyGravity()
     {
         if (!_isAppplyGravity) return;
-
         Velocity += CustomPhysicsEngine.Instance.GravityAcceleration * Time.fixedDeltaTime;
     }
 
@@ -94,7 +90,6 @@ public class CustomRigidBody : MonoBehaviour
     private void TweakVelocity()
     {
         if (!_isUpdateImpactPosition) return;
-        //if (Vector3.Distance(_positionAtImpact, this.transform.position) < CustomPhysicsEngine.Instance.MaxUpwardDistance) return;
         if (Velocity >= CustomPhysicsEngine.Instance.MinimumVelocity) return;
 
         Velocity = Mathf.Sign(Velocity) * CustomPhysicsEngine.Instance.BrakeVelocity;

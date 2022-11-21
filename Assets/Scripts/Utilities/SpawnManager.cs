@@ -6,6 +6,9 @@ public class SpawnManager : MonoBehaviour
 {
     // TODO #1: Stop spawning if enough obstacles (and score tracker) to reach maximum score
 
+    // Singleton
+    public static SpawnManager Instance = null;
+
     [Header("Asset")]
     [SerializeField] private GameObject _pipePrefab;
 
@@ -36,6 +39,10 @@ public class SpawnManager : MonoBehaviour
 
     private PoolManager _poolManager;
 
+    private GameObject _scoreTracker;
+
+    private Queue<Vector3> _trackerSpawnLocationQueue;
+
     private float _upperScaleY;
 
     private float _lowerScaleY;
@@ -44,6 +51,8 @@ public class SpawnManager : MonoBehaviour
 
     private float _pipeSpriteWidth;
 
+    private bool _isInitScoreTrackerLocation = false;
+
     private bool IsUsePool => _poolManager != null;
 
     public void DisableSpawning()
@@ -51,8 +60,23 @@ public class SpawnManager : MonoBehaviour
         CancelInvoke();
     }
 
+    public void RespawnScoreTracker()
+    {
+        Vector3 spawnLocation = _trackerSpawnLocationQueue.Dequeue();
+        _scoreTracker.transform.position = _pipeParentTransform.TransformPoint(spawnLocation);
+    }
+
     private void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(this.gameObject);
+        }
+
         _inversePrefabRotation = Quaternion.Inverse(_pipePrefab.transform.rotation);
 
         var spriteRenderer = _pipePrefab.GetComponent<SpriteRenderer>();
@@ -60,11 +84,16 @@ public class SpawnManager : MonoBehaviour
         _pipeSpriteWidth = spriteRenderer.sprite.bounds.size.x;
 
         _poolManager = GetComponent<PoolManager>();
+
+        _trackerSpawnLocationQueue = new Queue<Vector3>();
     }
 
     private void Start()
     {
         InvokeRepeating("SpawnPipeObject", GameManager.Instance.GetStartDelay(), _spawnInterval);
+
+        _scoreTracker = Instantiate(_scoreTrackerPrefab, new Vector3(100, 0, 0), _scoreTrackerPrefab.transform.rotation, _trackersParentTransform);
+        CustomPhysicsEngine.Instance.UpdateCollider(_scoreTracker.GetComponent<BoxCollider2D>());
     }
 
     private void SpawnPipeObject()
@@ -74,7 +103,12 @@ public class SpawnManager : MonoBehaviour
 
         SetPipePositionAndScale();
 
-        SpawnScoreTracker();
+        UpdateTrackerLocations();
+        if (!_isInitScoreTrackerLocation)
+        {
+            RespawnScoreTracker();
+            _isInitScoreTrackerLocation = true;
+        }
     }
 
     private void GenerateSpawnPositions()
@@ -102,14 +136,7 @@ public class SpawnManager : MonoBehaviour
 
     private void SetPipePositionAndScale()
     {
-        // var upperPipe = Instantiate(_pipePrefab, _spawnUpperPosition, _pipePrefab.transform.rotation, _pipeParentTransform);
-        // var upperPipeLocalScale = upperPipe.transform.localScale;
-        // upperPipe.transform.localScale = new Vector3(upperPipeLocalScale.x, _upperScaleY, upperPipeLocalScale.z);
         var upperPipe = InstantiateObjectFromPool(_spawnUpperPosition, _pipePrefab.transform.rotation, _upperScaleY);
-
-        // var lowerPipe = Instantiate(_pipePrefab, _spawnLowerPosition, _inversePrefabRotation, _pipeParentTransform);
-        // var lowerPipeLocalScale = lowerPipe.transform.localScale;
-        // lowerPipe.transform.localScale = new Vector3(lowerPipeLocalScale.x, _lowerScaleY, lowerPipeLocalScale.z);
         var lowerPipe = InstantiateObjectFromPool(_spawnLowerPosition, _inversePrefabRotation, _lowerScaleY);
 
         // Update newly spawned collider list
@@ -120,15 +147,12 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
-    private void SpawnScoreTracker()
+    private void UpdateTrackerLocations()
     {
         float positionX = Mathf.Max(_spawnUpperPosition.x, _spawnLowerPosition.x) + _pipeSpriteWidth / 2f;
-        Vector2 spawnLocation = new Vector3(positionX, 0);
+        Vector3 spawnLocation = new Vector3(positionX, 0, 0);
 
-        var scoreTracker = Instantiate(_scoreTrackerPrefab, spawnLocation, _scoreTrackerPrefab.transform.rotation, _trackersParentTransform);
-
-        // Update newly spawned collider list
-        CustomPhysicsEngine.Instance.UpdateCollider(scoreTracker.GetComponent<BoxCollider2D>());
+        _trackerSpawnLocationQueue.Enqueue(_pipeParentTransform.InverseTransformPoint(spawnLocation));
     }
 
     private GameObject InstantiateObjectFromPool(Vector3 spawnLocation, Quaternion spawnRotation, float scale)

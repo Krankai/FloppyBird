@@ -62,6 +62,7 @@ public class CollisionDetectionSubscriber : MonoBehaviour
         if (CompareTag("Player") && collideObject.CompareTag("ScoreTracker"))
         {
             GameManager.Instance.UpdateScore();
+            SpawnManager.Instance.RespawnScoreTracker();
         }
     }
 

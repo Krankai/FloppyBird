@@ -34,6 +34,8 @@ public class SpawnManager : MonoBehaviour
 
     private Quaternion _inversePrefabRotation;
 
+    private PoolManager _poolManager;
+
     private float _upperScaleY;
 
     private float _lowerScaleY;
@@ -41,6 +43,8 @@ public class SpawnManager : MonoBehaviour
     private float _pipeSpriteHeight;
 
     private float _pipeSpriteWidth;
+
+    private bool IsUsePool => _poolManager != null;
 
     public void DisableSpawning()
     {
@@ -54,6 +58,8 @@ public class SpawnManager : MonoBehaviour
         var spriteRenderer = _pipePrefab.GetComponent<SpriteRenderer>();
         _pipeSpriteHeight = spriteRenderer.sprite.bounds.size.y;
         _pipeSpriteWidth = spriteRenderer.sprite.bounds.size.x;
+
+        _poolManager = GetComponent<PoolManager>();
     }
 
     private void Start()
@@ -96,17 +102,22 @@ public class SpawnManager : MonoBehaviour
 
     private void SetPipePositionAndScale()
     {
-        var upperPipe = Instantiate(_pipePrefab, _spawnUpperPosition, _pipePrefab.transform.rotation, _pipeParentTransform);
-        var upperPipeLocalScale = upperPipe.transform.localScale;
-        upperPipe.transform.localScale = new Vector3(upperPipeLocalScale.x, _upperScaleY, upperPipeLocalScale.z);
+        // var upperPipe = Instantiate(_pipePrefab, _spawnUpperPosition, _pipePrefab.transform.rotation, _pipeParentTransform);
+        // var upperPipeLocalScale = upperPipe.transform.localScale;
+        // upperPipe.transform.localScale = new Vector3(upperPipeLocalScale.x, _upperScaleY, upperPipeLocalScale.z);
+        var upperPipe = InstantiateObjectFromPool(_spawnUpperPosition, _pipePrefab.transform.rotation, _upperScaleY);
 
-        var lowerPipe = Instantiate(_pipePrefab, _spawnLowerPosition, _inversePrefabRotation, _pipeParentTransform);
-        var lowerPipeLocalScale = lowerPipe.transform.localScale;
-        lowerPipe.transform.localScale = new Vector3(lowerPipeLocalScale.x, _lowerScaleY, lowerPipeLocalScale.z);
+        // var lowerPipe = Instantiate(_pipePrefab, _spawnLowerPosition, _inversePrefabRotation, _pipeParentTransform);
+        // var lowerPipeLocalScale = lowerPipe.transform.localScale;
+        // lowerPipe.transform.localScale = new Vector3(lowerPipeLocalScale.x, _lowerScaleY, lowerPipeLocalScale.z);
+        var lowerPipe = InstantiateObjectFromPool(_spawnLowerPosition, _inversePrefabRotation, _lowerScaleY);
 
         // Update newly spawned collider list
-        CustomPhysicsEngine.Instance.UpdateCollider(upperPipe.GetComponent<BoxCollider2D>());
-        CustomPhysicsEngine.Instance.UpdateCollider(lowerPipe.GetComponent<BoxCollider2D>());
+        if (!IsUsePool)
+        {
+            CustomPhysicsEngine.Instance.UpdateCollider(upperPipe.GetComponent<BoxCollider2D>());
+            CustomPhysicsEngine.Instance.UpdateCollider(lowerPipe.GetComponent<BoxCollider2D>());
+        }
     }
 
     private void SpawnScoreTracker()
@@ -118,5 +129,26 @@ public class SpawnManager : MonoBehaviour
 
         // Update newly spawned collider list
         CustomPhysicsEngine.Instance.UpdateCollider(scoreTracker.GetComponent<BoxCollider2D>());
+    }
+
+    private GameObject InstantiateObjectFromPool(Vector3 spawnLocation, Quaternion spawnRotation, float scale)
+    {
+        GameObject spawnedObject = null;
+        if (!IsUsePool)
+        {
+            Debug.LogWarning("No PoolManager attached. Instantiate object normally.");
+            spawnedObject = Instantiate(_pipePrefab, spawnLocation, spawnRotation, _pipeParentTransform);
+        }
+        else
+        {
+            spawnedObject = _poolManager.GetPoolObject();
+            spawnedObject.transform.position = spawnLocation;
+            spawnedObject.transform.rotation = spawnRotation;
+        }
+
+        var currentLocalScale = spawnedObject.transform.localScale;
+        spawnedObject.transform.localScale = new Vector3(currentLocalScale.x, scale, currentLocalScale.z);
+
+        return spawnedObject;
     }
 }
